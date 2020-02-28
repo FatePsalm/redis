@@ -14,8 +14,12 @@ import org.springframework.data.redis.connection.lettuce.LettucePoolingClientCon
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.ObjectUtils;
 
+import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.time.Duration;
 
 @Configuration
@@ -209,5 +213,14 @@ public class RedisConfig extends CachingConfigurerSupport {
         stringRedisTemplate.afterPropertiesSet();
         stringRedisTemplate.setEnableTransactionSupport(true);
         return stringRedisTemplate;
+    }
+    /**
+     * 作者 CG
+     * 时间 2019/8/5 10:57
+     * 注释 redis 事务管理器
+     */
+    @Bean
+    public PlatformTransactionManager transactionManager(DataSource dataSource) throws SQLException {
+        return new DataSourceTransactionManager(dataSource);
     }
 }
