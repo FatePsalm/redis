@@ -4,11 +4,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.wemew.rediscache.config.exception.BusinessException;
 import com.wemew.rediscache.enums.RedisModel;
 import com.wemew.rediscache.enums.RedisSoure;
-import com.wemew.rediscache.model.MethodNameAndArgs;
 import com.wemew.rediscache.model.RedisManage;
 import com.wemew.rediscache.service.RedisManageService;
 import com.wemew.rediscache.service.RedisUtils;
+import com.wemew.rediscache.utils.ReflectionUtil;
 import com.wemew.rediscache.utils.SpringUtil;
+import com.wemew.rediscache.utils.StrUtil;
 import com.wemew.rediscache.utils.reflect.StrToGenericityService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,14 @@ public class RedisUtilImpl implements RedisUtils {
         JSONObject js = new JSONObject(true);
         int index = redisModel.getIndex();
         js.put("redisModel", redisModel.toString());
+        JSONObject reveal = new JSONObject();
+        reveal.put("Key", redisModel.getKey());
+        reveal.put("Time", redisModel.getTime());
+        reveal.put("Type", redisModel.getType());
+        reveal.put("redisSource", redisModel.getRedisSource());
+        reveal.put("text", redisModel.getText());
+        reveal.put("index", redisModel.getIndex());
+        js.put("reveal", reveal);
         if (list != null) {
             //筛选出对应下标
             Map<Integer, List<RedisManage>> collect = list.stream().filter(x -> x.getPid() == null).collect(Collectors.groupingBy(RedisManage::getRedisIndex));
@@ -93,7 +102,14 @@ public class RedisUtilImpl implements RedisUtils {
         for (int i = 0; i < classes.size(); i++) {
             Class<?> aClass = classes.get(i);
             Class<?> parame = parameter.get(i);
-            if (aClass != parame) {
+            if (parame.isPrimitive()){
+                parame = ReflectionUtil.basisToObject(parame);
+                if (parame==null)
+                    throw new BusinessException("基础类型转化异常!");
+            }
+            String aClassName = StrUtil.subStringDoule(aClass.getName()) ;
+            String parameName = StrUtil.subStringDoule(parame.getName());
+            if (!aClassName.equals(parameName)) {
                 if (parame != Object.class) {
                     return false;
                 }

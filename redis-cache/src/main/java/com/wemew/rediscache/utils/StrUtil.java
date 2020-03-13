@@ -1,9 +1,25 @@
 package com.wemew.rediscache.utils;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class StrinUtil {
+public class StrUtil {
+     /**
+       * 作者 CG
+       * 时间 2020/3/3 15:16
+       * 注释 截取$以前的字符串
+       */
+     public static String subStringDoule(String str) {
+         if (StringUtils.isNotBlank(str)){
+             int index = str.indexOf("$");
+             if (index!=-1){
+                 str = str.substring(0, index);
+             }
+         }
+         return str;
+     }
      /**
        * 作者 CG
        * 时间 2020/2/25 11:33

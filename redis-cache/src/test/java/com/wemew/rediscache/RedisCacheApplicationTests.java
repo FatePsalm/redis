@@ -11,7 +11,9 @@ import java.util.Map;
 class RedisCacheApplicationTests {
     @Test
     void strTest()  {
-
+        String s = "java.string.55$6";
+        String ss = s.substring(0,s.indexOf("$"));
+        System.out.println(ss);
 
     }
     public String add(){

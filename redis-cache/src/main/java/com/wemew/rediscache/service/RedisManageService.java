@@ -1,6 +1,8 @@
 package com.wemew.rediscache.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.wemew.rediscache.enums.RedisModel;
 import com.wemew.rediscache.enums.RedisType;
 import com.wemew.rediscache.model.MethodNameAndArgs;
 import com.wemew.rediscache.model.RedisManage;
@@ -16,6 +18,31 @@ import java.util.List;
  * @since 2020-02-25
  */
 public interface RedisManageService extends IService<RedisManage> {
+    /**
+     * 作者 CG
+     * 时间 2020/3/10 17:59
+     * 注释 删除
+     */
+    Integer deleteList(String id);
+     /**
+       * 作者 CG
+       * 时间 2020/3/10 17:01
+       * 注释 根据pid查询子项
+       */
+     List<JSONObject> subList(String pid);
+     /**
+       * 作者 CG
+       * 时间 2020/3/4 11:18
+       * 注释 获取全部的model
+      * @return
+      */
+     List<String> modelAll();
+    /**
+     * 作者 CG
+     * 时间 2020/3/4 11:13
+     * 注释 根据下标查询model信息
+     */
+    JSONObject findModel(Integer index);
     /**
      * 作者 CG
      * 时间 2020/2/28 18:41

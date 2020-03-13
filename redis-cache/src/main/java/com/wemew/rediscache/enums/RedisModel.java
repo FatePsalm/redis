@@ -1,7 +1,6 @@
 package com.wemew.rediscache.enums;
 
 import com.wemew.rediscache.model.RedisOpsParameter;
-import com.wemew.rediscache.service.RedisOpsParameterService;
 import com.wemew.rediscache.service.parameter.AdminRedisParament;
 import com.wemew.rediscache.service.parameter.UserRedisParament;
 
@@ -97,14 +96,13 @@ public enum RedisModel {
                 '}';
     }
 
-    public static RedisModel getClassName(RedisOpsParameterService redisOpsParameterService){
-        if (redisOpsParameterService!=null) {
+    public static RedisModel getClassName(RedisOpsParameter redisOpsParameter){
+        if (redisOpsParameter!=null) {
             RedisModel[] values = RedisModel.values();
             for (RedisModel value : values) {
                 Class<?> className = value.getClassName();
-                if (redisOpsParameterService.getClass()==className) {
-                    RedisOpsParameter service = (RedisOpsParameter) redisOpsParameterService;
-                    service.setModel(value);
+                if (redisOpsParameter.getClass()==className) {
+                    redisOpsParameter.setModel(value);
                     return value;
                 }
             }

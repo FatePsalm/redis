@@ -1,28 +1,36 @@
 package com.wemew.rediscache.service.parameter;
 
 import com.wemew.rediscache.model.RedisOpsParameter;
-import com.wemew.rediscache.service.RedisOpsParameterService;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
-public class UserRedisParament extends RedisOpsParameter implements RedisOpsParameterService  {
-
-    public String set() {
+public class UserRedisParament extends RedisOpsParameter  {
+    public RedisOpsParameter delete() {
         Object[] userParament = this.getPar(this.getClass());
         /*RedisUtils redisUtils = SpringUtil.getObject(RedisUtils.class);
         userParament[1] = redisUtils.redisList().toString();*/
-        getMap().put(UserRedisParament.class, Arrays.asList(userParament));
+        RedisOpsParameter redisOpsParameter = this.setMap(UserRedisParament.class, Arrays.asList(userParament));
 
 
         AdminRedisParament adminRedisParament = new AdminRedisParament();
-        adminRedisParament.setPars(getPars());
-        adminRedisParament.set();
-        Map<Class<?>, List<Object>> map = adminRedisParament.getMap();
-        getMap().putAll(map);
+        adminRedisParament.setRedisOpsParameter(redisOpsParameter);
+        redisOpsParameter.setRedisOpsParameter(adminRedisParament.delete());
 
-        return Thread.currentThread().getStackTrace()[1].getMethodName();
+        return redisOpsParameter.getRedisOpsParameter(Thread.currentThread().getStackTrace()[1].getMethodName());
+    }
+
+    public RedisOpsParameter set() {
+        Object[] userParament = this.getPar(this.getClass());
+        /*RedisUtils redisUtils = SpringUtil.getObject(RedisUtils.class);
+        userParament[1] = redisUtils.redisList().toString();*/
+        RedisOpsParameter redisOpsParameter = this.setMap(UserRedisParament.class, Arrays.asList(userParament));
+
+
+        AdminRedisParament adminRedisParament = new AdminRedisParament();
+        adminRedisParament.setRedisOpsParameter(redisOpsParameter);
+        redisOpsParameter.setRedisOpsParameter(adminRedisParament.set());
+
+        return this.getRedisOpsParameter(Thread.currentThread().getStackTrace()[1].getMethodName());
     }
 
 }

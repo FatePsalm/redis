@@ -1,5 +1,7 @@
 package com.wemew.rediscache.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wemew.rediscache.config.exception.BusinessException;
@@ -16,15 +18,16 @@ import com.wemew.rediscache.utils.SpringUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -40,6 +43,55 @@ public class RedisManageServiceImpl extends ServiceImpl<RedisManageMapper, Redis
     private SpringUtil springUtil;
     @Autowired
     private RedisUtils redisUtils;
+
+    @Override
+    public Integer deleteList(String id) {
+        QueryWrapper<RedisManage> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(RedisManage::getPid, id).or().
+                eq(RedisManage::getId, id);
+        int delete = this.baseMapper.delete(queryWrapper);
+        return delete;
+    }
+
+    @Override
+    public List<JSONObject> subList(String pid) {
+      List<JSONObject> list = new ArrayList<>();
+        List<RedisManage> manages = findPid(pid);
+        if (manages!=null){
+            for (RedisManage index : manages) {
+                Integer redisIndex = index.getRedisIndex();
+                JSONObject model = findModel(redisIndex);
+                model.put("opsName", index.getOpsName());
+                model.put("remarks", index.getRemarks());
+                model.put("redisIndex", redisIndex);
+                model.put("id", index.getId());
+                list.add(model);
+            }
+        }
+        return list;
+    }
+
+    @Override
+    public List<String> modelAll() {
+        RedisModel[] values = RedisModel.values();
+        List<RedisModel> list = new ArrayList<>();
+        Collections.addAll(list, values);
+        return list.stream().map(x->x.toString()).collect(Collectors.toList());
+    }
+
+    @Override
+    public JSONObject findModel(Integer index) {
+        RedisModel model = RedisModel.findIndex(index);
+        JSONObject j = new JSONObject();
+        if (model!=null){
+            j.put("Key", model.getKey());
+            j.put("Time", model.getTime());
+            j.put("Type", model.getType());
+            j.put("redisSource", model.getRedisSource());
+            j.put("Text", model.getText());
+        }
+        return j;
+    }
 
     @Override
     public List<MethodNameAndArgs> findKeyOpsName() {
@@ -134,6 +186,7 @@ public class RedisManageServiceImpl extends ServiceImpl<RedisManageMapper, Redis
         redisManage.setCreateTime(LocalDateTime.now());
         redisManage.setStatus(RedisStatus.UP.getStatus());
         redisManage.setClassify(redisType.getType());
+        redisManage.setRemarks(keyTypeOps.getRemarks());
         return save(redisManage);
     }
 
